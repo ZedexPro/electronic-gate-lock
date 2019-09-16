@@ -1,0 +1,52 @@
+esphome:
+  name: gate
+  platform: ESP8266
+  board: esp01_1m
+  on_boot: 
+  - switch.turn_on: relay
+
+wifi:
+  ssid: "YOUR SSID HERE"
+  password: "YOUR PASSWORD HERE"
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO14
+      mode: INPUT_PULLUP
+    name: "Side Gate"
+    device_class: door
+  - platform: gpio
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "Exit Button"
+    on_press:
+    - switch.turn_off: relay
+    - delay: 3000ms
+    - switch.turn_on: relay
+
+switch:
+  - platform: gpio
+    pin: GPIO12
+    id: relay
+  - platform: template
+    icon: "mdi:gate"
+    name: "Gate Controller"
+    turn_on_action:
+    - switch.turn_off: relay
+    - delay: 3000ms
+    - switch.turn_on: relay
+    
+status_led:
+  pin:
+    number: GPIO13
